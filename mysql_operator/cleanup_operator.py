@@ -28,7 +28,7 @@ class CleanupOperator:
                     username=self.username,
                     password=self.password,
                     switch=switch)
-        os.system(command=command)
+        os.system(command)
 
     def drop(self, db_name, tables=None, keep_db=True):
         """
@@ -67,7 +67,7 @@ class CleanupOperator:
                             password=self.password,
                             db_name=db_name)
 
-        os.system(command=drop_command)
+        os.system(drop_command)
         self._fk_switch(switch=1)
         print("CLEANUP FINISHED")
 
@@ -89,7 +89,7 @@ class CleanupOperator:
                     password=self.password,
                     db_name=db_name,
                     pattern=pattern)
-        os.system(command=drop_command)
+        os.system(drop_command)
         self._fk_switch(switch=1)
         print("CLEANUP FINISHED")
 

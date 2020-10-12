@@ -16,3 +16,4 @@
 """
 from mysql_operator.backup_operator import *
 from mysql_operator.cleanup_operator import *
+from mysql_operator.cli import *

@@ -21,18 +21,23 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='mysql-operator',
-    version='0.0.2',
+    version='0.0.3',
     author='Jimmy Yeh',
     author_email='chienfeng0719@hotmail.com',
     description='A tool for backup and cleanup mysql',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='',
+    url='https://github.com/chienfeng0719/mysql-operator',
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.6',
+    entry_points={
+        'console_scripts': [
+            'mysql-operator = mysql_operator:CliOperator.main'
+        ]
+    },
+    python_requires='>=3.5',
 )

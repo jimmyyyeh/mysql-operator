@@ -74,7 +74,7 @@ class BackupOperator:
                             password=self.password,
                             filename=filename)
 
-        os.system(command=dump_command)
+        os.system(dump_command)
         print('BACKUP FINISHED')
 
     def pattern_backup(self, db_name, pattern, filename='backup_{date}.sql'.format(date=datetime.now().date())):
@@ -96,16 +96,16 @@ class BackupOperator:
                                                password=self.password,
                                                db_name=db_name,
                                                pattern=pattern)
-        os.system(command=select_command)
+        os.system(select_command)
         dump_command = "mysqldump -h {hostname} -u {username} -p{password} {db_name} `cat tables.txt` > {filename}" \
             .format(hostname=self.hostname,
                     username=self.username,
                     password=self.password,
                     db_name=db_name,
                     filename=filename)
-        os.system(command=dump_command)
+        os.system(dump_command)
 
-        os.system(command='rm tables.txt')
+        os.system('rm tables.txt')
         print('BACKUP FINISHED')
 
     def restore(self, filename, db_name=None):
@@ -130,7 +130,7 @@ class BackupOperator:
                         username=self.username,
                         password=self.password,
                         filename=filename)
-        os.system(command=restore_command)
+        os.system(restore_command)
         print('RESTORE FINISHED')
 
 
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     backup_operator = BackupOperator(hostname='localhost', username='root', password='root')
 
     # loading test database
-    backup_operator.restore(filename='init.sql')
+    backup_operator.restore(filename='../init.sql')
 
     # backup all database
     backup_operator.backup()

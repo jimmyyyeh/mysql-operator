@@ -6,8 +6,21 @@
 A tool for backup and cleanup mysql.
 
 This package can make you backup or cleanup mysql more earlier with python3.
+## initial testing data
+1. download `https://github.com/chienfeng0719/mysql-operator/blob/develop/init.sql`
+2. run command `mysql-operator -r init.sql`
+
 ## How To Use:
 
+You can use mysql-operator through command line for backup/restore/drop database as the following example:
+### CLI
+```
+mysql-operator -b foo_bar_db -> backup foo_bar_db
+mysql-operator -d foo_bar_db -> drop foo_bar_db
+mysql-operator -r backup_2020-10-10.sql -> restore data from backup_2020-10-10.sql
+```
+---
+You can also do some advanced operate with python:
 ### Backup
 ```python
 from msyql_operator import BackupOperator
