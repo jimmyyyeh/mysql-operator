@@ -23,7 +23,7 @@ mysql-operator -r backup_2020-10-10.sql -> restore data from backup_2020-10-10.s
 You can also do some advanced operate with python:
 ### Backup
 ```python
-from msyql_operator import BackupOperator
+from mysql_operator import BackupOperator
 
 # init object
 backup_operator = BackupOperator(hostname='localhost', username='root', password='root')
@@ -49,7 +49,7 @@ backup_operator.restore(db_name='foo_bar_db', filename='foo_bar_bak_test.sql')
 
 ### Cleanup
 ```python
-from msyql_operator import BackupOperator
+from mysql_operator import CleanupOperator
 
 # init object
 cleanup_operator = CleanupOperator(hostname='localhost', username='root', password='root')
