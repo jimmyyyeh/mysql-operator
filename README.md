@@ -26,7 +26,7 @@ You can also do some advanced operate with python:
 from mysql_operator import BackupOperator
 
 # init object
-backup_operator = BackupOperator(hostname='localhost', username='root', password='root')
+backup_operator = BackupOperator(hostname='localhost', port=3306, username='root', password='root')
 
 # backup all database
 backup_operator.backup()
@@ -52,7 +52,7 @@ backup_operator.restore(db_name='foo_bar_db', filename='foo_bar_bak_test.sql')
 from mysql_operator import CleanupOperator
 
 # init object
-cleanup_operator = CleanupOperator(hostname='localhost', username='root', password='root')
+cleanup_operator = CleanupOperator(hostname='localhost', port=3306, username='root', password='root')
 
 # drop all tables in foo_bar_db
 cleanup_operator.drop(db_name='foo_bar_db')

@@ -19,12 +19,14 @@ from datetime import datetime
 
 
 class BackupOperator:
-    def __init__(self, hostname='localhost', username='root', password='root'):
+    def __init__(self, hostname='localhost', port=3306, username='root', password='root'):
         self.hostname = hostname
+        self.port = port
         self.username = username
         self.password = password
 
-    def backup(self, dbs=None, db_name=None, tables=None, filename='backup_{date}.sql'.format(date=datetime.now().date())):
+    def backup(self, dbs=None, db_name=None, tables=None,
+               filename='backup_{date}.sql'.format(date=datetime.now().date())):
         """
         backup mysql with specific databases and tables
         example:
@@ -41,38 +43,38 @@ class BackupOperator:
 
         if dbs:
             # backup multiple databases
-            dump_command = 'mysqldump -h {hostname} -u {username} -p{password} --databases {dbs} > {filename}' \
-                .format(hostname=self.hostname,
-                        username=self.username,
-                        password=self.password,
-                        dbs=' '.join(dbs),
-                        filename=filename)
+            dump_command = f'mysqldump ' \
+                           f'-h {self.hostname} ' \
+                           f'-P {self.port} ' \
+                           f'-u {self.username} ' \
+                           f'-p{self.password} ' \
+                           f'--databases {dbs} > {filename}'
         else:
             if db_name:
                 # backup specific database with multiple tables
                 if tables:
-                    dump_command = 'mysqldump -h {hostname} -u {username} -p{password} {db_name} {tables} > {filename}' \
-                        .format(hostname=self.hostname,
-                                username=self.username,
-                                password=self.password,
-                                db_name=db_name,
-                                tables=' '.join(tables),
-                                filename=filename)
+                    dump_command = f'mysqldump ' \
+                                   f'-h {self.hostname} ' \
+                                   f'-P {self.port} ' \
+                                   f'-u {self.username} ' \
+                                   f'-p{self.password} ' \
+                                   f'{db_name} {tables} > {filename}'
                 else:
                     # backup all tables in specific database
-                    dump_command = 'mysqldump -h {hostname} -u {username} -p{password} {db_name} > {filename}' \
-                        .format(hostname=self.hostname,
-                                username=self.username,
-                                password=self.password,
-                                db_name=db_name,
-                                filename=filename)
+                    dump_command = f'mysqldump -h ' \
+                                   f'{self.hostname} ' \
+                                   f'-P {self.port} ' \
+                                   f'-u {self.username} ' \
+                                   f'-p{self.password} ' \
+                                   f'{db_name} > {filename}'
             else:
                 # backup all databases
-                dump_command = 'mysqldump -h {hostname} -u {username} -p{password} --all-databases > {filename}' \
-                    .format(hostname=self.hostname,
-                            username=self.username,
-                            password=self.password,
-                            filename=filename)
+                dump_command = f'mysqldump ' \
+                               f'-h {self.hostname} ' \
+                               f'-P {self.port} ' \
+                               f'-u {self.username} ' \
+                               f'-p{self.password} ' \
+                               f'--all-databases > {filename}'
 
         os.system(dump_command)
         print('BACKUP FINISHED')
@@ -88,21 +90,22 @@ class BackupOperator:
         :param filename:
         :return:
         """
-        select_command = 'mysql -NB -h {hostname} -u {username} -p{password} -e ' \
-                         '"SELECT table_name FROM information_schema.tables ' \
-                         'WHERE table_schema = \'{db_name}\' AND table_name like \'{pattern}\';"' \
-                         '> tables.txt'.format(hostname=self.hostname,
-                                               username=self.username,
-                                               password=self.password,
-                                               db_name=db_name,
-                                               pattern=pattern)
+        select_command = f'mysql -NB ' \
+                         f'-h {self.hostname} ' \
+                         f'-P {self.port} ' \
+                         f'-u {self.username} ' \
+                         f'-p{self.password} -e ' \
+                         f'"SELECT table_name FROM information_schema.tables ' \
+                         f'WHERE table_schema = \'{db_name}\' AND table_name like \'{pattern}\';"' \
+                         f'> tables.txt'
         os.system(select_command)
-        dump_command = "mysqldump -h {hostname} -u {username} -p{password} {db_name} `cat tables.txt` > {filename}" \
-            .format(hostname=self.hostname,
-                    username=self.username,
-                    password=self.password,
-                    db_name=db_name,
-                    filename=filename)
+        dump_command = f'mysqldump ' \
+                       f'-h {self.hostname} ' \
+                       f'-P {self.port} ' \
+                       f'-u {self.username} ' \
+                       f'-p{self.password} ' \
+                       f'{db_name} `cat tables.txt` > {filename}'
+
         os.system(dump_command)
 
         os.system('rm tables.txt')
@@ -118,25 +121,24 @@ class BackupOperator:
         :return:
         """
         if db_name:
-            restore_command = 'mysql -h {hostname} -u {username} -p{password} {db_name} < {filename}' \
-                .format(hostname=self.hostname,
-                        username=self.username,
-                        password=self.password,
-                        db_name=db_name,
-                        filename=filename)
+            restore_command = f'mysql ' \
+                              f'-h {self.hostname} ' \
+                              f'-P {self.port} ' \
+                              f'-u {self.username} ' \
+                              f'-p{self.password} {db_name} < {filename}'
         else:
-            restore_command = 'mysql -h {hostname} -u {username} -p{password} < {filename}' \
-                .format(hostname=self.hostname,
-                        username=self.username,
-                        password=self.password,
-                        filename=filename)
+            restore_command = f'mysql ' \
+                              f'-h {self.hostname} ' \
+                              f'-P {self.port} ' \
+                              f'-u {self.username} ' \
+                              f'-p{self.password} < {filename}'
         os.system(restore_command)
         print('RESTORE FINISHED')
 
 
 if __name__ == '__main__':
     # init object
-    backup_operator = BackupOperator(hostname='localhost', username='root', password='root')
+    backup_operator = BackupOperator(hostname='localhost', port=3306, username='root', password='root')
 
     # loading test database
     backup_operator.restore(filename='../init.sql')

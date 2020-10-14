@@ -17,17 +17,19 @@ import os
 
 
 class CleanupOperator:
-    def __init__(self, hostname='localhost', username='root', password='root'):
+    def __init__(self, hostname='localhost', port=3306, username='root', password='root'):
         self.hostname = hostname
+        self.port = port
         self.username = username
         self.password = password
 
     def _fk_switch(self, switch=0):
-        command = 'mysql -NB -h {hostname} -u {username} -p{password} -e "SET FOREIGN_KEY_CHECKS = {switch}";' \
-            .format(hostname=self.hostname,
-                    username=self.username,
-                    password=self.password,
-                    switch=switch)
+        command = f'mysql -NB ' \
+                  f'-h {self.hostname} ' \
+                  f'-P {self.port} ' \
+                  f'-u {self.username} ' \
+                  f'-p{self.password} ' \
+                  f'-e "SET FOREIGN_KEY_CHECKS = {switch}";'
         os.system(command)
 
     def drop(self, db_name, tables=None, keep_db=True):
@@ -40,33 +42,48 @@ class CleanupOperator:
         """
         self._fk_switch(switch=0)
         if tables:
-            drop_command = 'mysql -NB -h {hostname} -u {username} -p{password} -e ' \
-                           '"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\' ' \
-                           'AND table_name in (\'{tables}\');" | ' \
-                           'xargs -I {{}} mysql -NB -h {hostname} -u {username} -p{password} {db_name} -e ' \
-                           '"DROP TABLE {{}}";' \
-                .format(hostname=self.hostname,
-                        username=self.username,
-                        password=self.password,
-                        db_name=db_name,
-                        tables="','".join(tables))
+            tables_string = "','".join(tables)
+            drop_command = f'mysql -NB ' \
+                           f'-h {self.hostname} ' \
+                           f'-P {self.port} ' \
+                           f'-u {self.username} ' \
+                           f'-p{self.password} ' \
+                           f'-e ' \
+                           f'"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\' ' \
+                           f'AND table_name in (\'{tables_string}\');" | ' \
+                           f'xargs -I {{}} ' \
+                           f'mysql -NB ' \
+                           f'-h {self.hostname} ' \
+                           f'-P {self.port} ' \
+                           f'-u {self.username} ' \
+                           f'-p{self.password} {db_name} ' \
+                           f'-e ' \
+                           f'"DROP TABLE {{}}";'
         else:
             if keep_db:
-                drop_command = 'mysql -NB -h {hostname} -u {username} -p{password} -e ' \
-                               '"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\';" | ' \
-                               'xargs -I {{}} mysql -NB -h {hostname} -u {username} -p{password} {db_name} -e ' \
-                               '"DROP TABLE {{}}";' \
-                    .format(hostname=self.hostname,
-                            username=self.username,
-                            password=self.password,
-                            db_name=db_name)
+                drop_command = f'mysql -NB ' \
+                               f'-h {self.hostname} ' \
+                               f'-P {self.port} ' \
+                               f'-u {self.username} ' \
+                               f'-p{self.password} ' \
+                               f'-e ' \
+                               f'"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\';" | ' \
+                               f'xargs -I {{}} ' \
+                               f'mysql -NB ' \
+                               f'-h {self.hostname} ' \
+                               f'-P {self.port} ' \
+                               f'-u {self.username} ' \
+                               f'-p{self.password} {db_name} ' \
+                               f'-e ' \
+                               f'"DROP TABLE {{}}";'
             else:
-                drop_command = 'mysql -NB -h {hostname} -u {username} -p{password} -e "DROP DATABASE {db_name}"' \
-                    .format(hostname=self.hostname,
-                            username=self.username,
-                            password=self.password,
-                            db_name=db_name)
-
+                drop_command = f'mysql -NB ' \
+                               f'-h {self.hostname} ' \
+                               f'-P {self.port} ' \
+                               f'-u {self.username} ' \
+                               f'-p{self.password} ' \
+                               f'-e ' \
+                               f'"DROP DATABASE {db_name}"'
         os.system(drop_command)
         self._fk_switch(switch=1)
         print("CLEANUP FINISHED")
@@ -79,16 +96,22 @@ class CleanupOperator:
         :return:
         """
         self._fk_switch(switch=0)
-        drop_command = 'mysql -NB -h {hostname} -u {username} -p{password} -e ' \
-                       '"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\' ' \
-                       'AND table_name like \'{pattern}\';" | ' \
-                       'xargs -I {{}} mysql -NB -h {hostname} -u {username} -p{password} {db_name} -e ' \
-                       '"DROP TABLE {{}}";' \
-            .format(hostname=self.hostname,
-                    username=self.username,
-                    password=self.password,
-                    db_name=db_name,
-                    pattern=pattern)
+        drop_command = f'mysql -NB ' \
+                       f'-h {self.hostname} ' \
+                       f'-P {self.port} ' \
+                       f'-u {self.username} ' \
+                       f'-p{self.password} ' \
+                       f'-e ' \
+                       f'"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\' ' \
+                       f'AND table_name like \'{pattern}\';" | ' \
+                       f'xargs -I {{}} ' \
+                       f'mysql -NB ' \
+                       f'-h {self.hostname} ' \
+                       f'-P {self.port} ' \
+                       f'-u {self.username} ' \
+                       f'-p{self.password} {db_name} ' \
+                       f'-e ' \
+                       f'"DROP TABLE {{}}";'
         os.system(drop_command)
         self._fk_switch(switch=1)
         print("CLEANUP FINISHED")
@@ -96,7 +119,7 @@ class CleanupOperator:
 
 if __name__ == '__main__':
     # init object
-    cleanup_operator = CleanupOperator(hostname='localhost', username='root', password='root')
+    cleanup_operator = CleanupOperator(hostname='localhost', port=3306, username='root', password='root')
 
     # drop all tables in foo_bar_db
     cleanup_operator.drop(db_name='foo_bar_db')
