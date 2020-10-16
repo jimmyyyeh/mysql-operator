@@ -21,10 +21,10 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='mysql-operator',
-    version='0.0.5',
+    version='0.0.8',
     author='Jimmy Yeh',
     author_email='chienfeng0719@hotmail.com',
-    description='A tool for backup and cleanup mysql',
+    description='A tool for backup/cleanup/migrate mysql',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/chienfeng0719/mysql-operator',

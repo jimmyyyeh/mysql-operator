@@ -24,7 +24,12 @@ class CleanupOperator:
         self.password = password
 
     def _fk_switch(self, switch=0):
-        command = f'mysql -NB ' \
+        """
+        foreign_key_checks switcher
+        :param switch:
+        :return:
+        """
+        command = f'mysql ' \
                   f'-h {self.hostname} ' \
                   f'-P {self.port} ' \
                   f'-u {self.username} ' \
@@ -35,6 +40,13 @@ class CleanupOperator:
     def drop(self, db_name, tables=None, keep_db=True):
         """
         drop tables with specific database, set keep_db as False to drop tables with database
+        example:
+            cleanup_operator = CleanupOperator(hostname='localhost', port=3306, username='root', password='root')
+
+            cleanup_operator.drop(db_name='foo_bar_db')
+            cleanup_operator.drop(db_name='hello_world_db', keep_db=False)
+            cleanup_operator.drop(db_name='foo_bar_db', tables=['foo_user', 'bar_weather'])
+
         :param db_name:
         :param tables:
         :param keep_db:
@@ -52,7 +64,7 @@ class CleanupOperator:
                            f'"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\' ' \
                            f'AND table_name in (\'{tables_string}\');" | ' \
                            f'xargs -I {{}} ' \
-                           f'mysql -NB ' \
+                           f'mysql ' \
                            f'-h {self.hostname} ' \
                            f'-P {self.port} ' \
                            f'-u {self.username} ' \
@@ -69,7 +81,7 @@ class CleanupOperator:
                                f'-e ' \
                                f'"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\';" | ' \
                                f'xargs -I {{}} ' \
-                               f'mysql -NB ' \
+                               f'mysql ' \
                                f'-h {self.hostname} ' \
                                f'-P {self.port} ' \
                                f'-u {self.username} ' \
@@ -77,7 +89,7 @@ class CleanupOperator:
                                f'-e ' \
                                f'"DROP TABLE {{}}";'
             else:
-                drop_command = f'mysql -NB ' \
+                drop_command = f'mysql ' \
                                f'-h {self.hostname} ' \
                                f'-P {self.port} ' \
                                f'-u {self.username} ' \
@@ -91,6 +103,10 @@ class CleanupOperator:
     def pattern_drop(self, db_name, pattern):
         """
         drop tables by pattern with specific database
+        example:
+            cleanup_operator = CleanupOperator(hostname='localhost', port=3306, username='root', password='root')
+            cleanup_operator.pattern_drop(db_name='foo_bar_db', pattern='%foo%')
+
         :param db_name:
         :param pattern:
         :return:
@@ -105,7 +121,7 @@ class CleanupOperator:
                        f'"SELECT table_name FROM information_schema.tables WHERE table_schema = \'{db_name}\' ' \
                        f'AND table_name like \'{pattern}\';" | ' \
                        f'xargs -I {{}} ' \
-                       f'mysql -NB ' \
+                       f'mysql ' \
                        f'-h {self.hostname} ' \
                        f'-P {self.port} ' \
                        f'-u {self.username} ' \
@@ -121,14 +137,14 @@ if __name__ == '__main__':
     # init object
     cleanup_operator = CleanupOperator(hostname='localhost', port=3306, username='root', password='root')
 
-    # drop all tables in foo_bar_db
+    # drop all tables in『foo_bar_db』
     cleanup_operator.drop(db_name='foo_bar_db')
 
-    # drop database hello_world_db
+    # drop database『hello_world_db』
     cleanup_operator.drop(db_name='hello_world_db', keep_db=False)
 
-    # drop ['foo_user', 'bar_weather'] in foo_bar_db
+    # drop tables ['foo_user', 'bar_weather'] in『foo_bar_db』
     cleanup_operator.drop(db_name='foo_bar_db', tables=['foo_user', 'bar_weather'])
 
-    # drop tables in foo_bar_db with pattern like '%foo%'
+    # drop tables in『foo_bar_db』 which table name like '%foo%'
     cleanup_operator.pattern_drop(db_name='foo_bar_db', pattern='%foo%')
