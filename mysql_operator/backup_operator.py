@@ -68,7 +68,7 @@ class BackupOperator:
                            f'-P {self.port} ' \
                            f'-u {self.username} ' \
                            f'-p{self.password} ' \
-                           f'--databases {dbs} > {filename}'
+                           f'--databases {" ".join(dbs)} > {filename}'
         else:
             if db_name:
                 self._create_db(db_name=db_name)
@@ -79,7 +79,7 @@ class BackupOperator:
                                    f'-P {self.port} ' \
                                    f'-u {self.username} ' \
                                    f'-p{self.password} ' \
-                                   f'{db_name} {tables} > {filename}'
+                                   f'{db_name} {" ".join(tables)} > {filename}'
                 else:
                     # backup all tables in specific database
                     dump_command = f'mysqldump -h ' \
