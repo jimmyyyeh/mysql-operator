@@ -60,8 +60,6 @@ class BackupOperator:
             raise TypeError('type of tables must be list')
 
         if dbs:
-            for db in dbs:
-                self._create_db(db_name=db)
             # backup multiple databases
             dump_command = f'mysqldump ' \
                            f'-h {self.hostname} ' \
@@ -71,7 +69,6 @@ class BackupOperator:
                            f'--databases {" ".join(dbs)} > {filename}'
         else:
             if db_name:
-                self._create_db(db_name=db_name)
                 # backup specific database with multiple tables
                 if tables:
                     dump_command = f'mysqldump ' \

@@ -71,7 +71,6 @@ class MigrateOperator:
         :return:
         """
         if db_name:
-            self._create_db(db_name=db_name, is_local=False)
             export_command = f'mysqldump ' \
                              f'-h {self.hostname} ' \
                              f'-P {self.port} ' \

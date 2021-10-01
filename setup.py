@@ -21,7 +21,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='mysql-operator',
-    version='0.0.9',
+    version='1.0.0',
     author='Jimmy Yeh',
     author_email='chienfeng0719@hotmail.com',
     description='A tool for backup/cleanup/migrate mysql',
